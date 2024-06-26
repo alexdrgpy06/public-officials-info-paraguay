@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<title>Información de funcionarios Públicos</title>
+</head>
+<body>
+<div style="text-align: center; padding: 10px;">
+	<h1>Buscar información de funcionarios Públicos</h1>
+	<input type="text" id="searchInput" placeholder="Entre nombre de funcionario">
+		<button onclick="searchFuncionario()">Buscar</button>
+	<p id="resultados"></p>
+</div>
+<script>
+	async function searchFuncionario() {
+		var dev = document.getElementById('searchInput').value;
+		const start_api = 'https://api.funcionarioformitor.com/search?name=' + dev;
+		try {
+			let response = await fetch(start_api);
+			let data = await response.json();
+			if (data.length > 0) {
+				var funcionario = data[0];
+				var resultados = '<h2>' + funcionario.name + '</h2>';
+				resultados += '<p>' + funcionario.position + ' - ' + funcionario.institucion + '</p>';
+				resultados += '<p>' + funcionario.email + '</p>';
+				document.getElementById('resultados').innerHTML = resultados;
+			} else {
+				document.getElementById('resultados').innerHTML = 'No se encontraron resultados';
+			}
+			extractFuncionario_news(dev.name);
+		} catch (err) {
+			document.getElementById('resultados').innerHTML = 'Error in consultar información.';
+		}
+	}
+
+	async function extractFuncionario_news(name) {
+		const search_api = 'https://www.google.com/search?q=' + name + ' casos de corrupción publicos';
+		try {
+			let response = await fetch(search_api);
+			let html = await response.text();
+			let news_dive = document.createElement('div');
+			news_div.innerHTML = html;
+			document.getElementById('resultados').appendChild(news_div);
+		} catch (err) {
+			document.getElementById('resultados').innerHTML = 'Error en consultar noticias.';
+		}
+	}
+</script>
+</body>
+</html>
